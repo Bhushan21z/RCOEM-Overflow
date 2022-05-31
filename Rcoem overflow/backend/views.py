@@ -20,3 +20,16 @@ def register(request):
 def login(request):
 	
 	return Response("INVALID DATA", status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def view_all_questions(request):
+	
+	data=get_all_questions()
+	return Response(data)
+
+
+@api_view(['POST'])
+def view_unanswered_questions(request):
+	
+	data=get_unanswered_questions()
+	return Response(data)
