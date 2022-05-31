@@ -1,40 +1,50 @@
-import gspread
 import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 from grpc import Status
+cred = credentials.Certificate('credentials.json')
 
-cred = credentials.Certificate("credentials.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
 def get_all_questions():
-	questions = db.collection("ques_bank").stream()
-	data = []
-	for q in questions:
-		doc = q.to_dict()
-		doc["id"] = q.id
-
-		data.append(doc)
-
-	return data
-
-def get_user_data(email):
-	users = db.collection("user").where(u'email', u'==', email).get()
-
-	if len(users) > 0:
-		udata = users[0].to_dict()
-		udata["id"] = users[0].id
-		return udata
-
-	return None
-
-
-def create_user(data, uid):
-	try:
-		db.collection('user').document(uid).set(data)
-		return 1;
-	except:
-		print("ERROR IN CREATE_USER")
-		return 0;
+    index=db.collection('index').document('index').get()
+    getindex=index.to_dict()
+    index=getindex['index']
+    returndata=[]
+    
+    for i in range(index):
+          returnmap={}
+          question_no='question'+str(i+1)
+          data=db.collection('questions').document(question_no).get()
+          data=data.to_dict()
+          answerlen=len(data['answers'])
+          if(answerlen>0):
+                returnmap['author']=data['author']
+                returnmap['no_of_answers']=answerlen
+                returnmap['views']=data['views']
+                returnmap['upvotes']=data['upvotes']
+                returnmap['question']=data['question']
+                returndata.append(returnmap)
+    
+    return returndata
+  
+def get_unanswered_questions():
+    index=db.collection('index').document('index').get()
+    getindex=index.to_dict()
+    index=getindex['index']
+    returndata=[]
+    
+    for i in range(index):
+          returnmap={}
+          question_no='question'+str(i+1)
+          data=db.collection('questions').document(question_no).get()
+          data=data.to_dict()
+          answerlen=len(data['answers'])
+          if(answerlen==0):
+                returnmap['author']=data['author']
+                returnmap['question']=data['question']
+                returndata.append(returnmap)
+    
+    return returndata
