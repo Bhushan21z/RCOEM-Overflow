@@ -14,3 +14,16 @@ class UserLoginSerializer(serializers.Serializer):
 	email = serializers.EmailField()
 	college = serializers.CharField(max_length = 100)
 	key = serializers.CharField(max_length=100)
+ 
+class AddQuestionSerializer(serializers.Serializer):
+    author= serializers.CharField(max_length=100)
+    email= serializers.EmailField()
+    password= serializers.CharField(max_length=100)
+    question= serializers.CharField(max_length=1000)
+    
+class AddAnswerSerializer(serializers.Serializer):
+    author= serializers.CharField(max_length=100)
+    email= serializers.EmailField()
+    password= serializers.CharField(max_length=100)
+    question= serializers.CharField(max_length=1000)
+    answer= serializers.CharField(max_length=10000000000)
