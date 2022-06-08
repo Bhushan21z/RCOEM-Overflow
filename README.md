@@ -1,4 +1,4 @@
-# Coderun-backend
+# RCOEM-OVERFLOW
 
 ## How to setup?
 
@@ -18,7 +18,7 @@ $ venv\Scripts\activate
 Then install the dependencies:
 
 ```sh
-(venv)$ cd apti_backend
+(venv)$ cd backend
 (venv)$ pip install -r requirements.txt
 ```
 Note the `(venv)` in front of the prompt. This indicates that this terminal
