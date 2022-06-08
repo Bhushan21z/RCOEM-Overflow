@@ -25,5 +25,8 @@ class AddAnswerSerializer(serializers.Serializer):
     author= serializers.CharField(max_length=100)
     email= serializers.EmailField()
     password= serializers.CharField(max_length=100)
-    question= serializers.CharField(max_length=1000)
+    question= serializers.CharField(max_length=100000000)
     answer= serializers.CharField(max_length=10000000000)
+
+class ViewSpecificQuestionSerializer(serializers.Serializer):
+    question= serializers.CharField(max_length=100000000)

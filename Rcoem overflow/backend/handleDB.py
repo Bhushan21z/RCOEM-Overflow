@@ -84,3 +84,47 @@ def add_answer_db(question,author,answer):
       }
       answer_array.append(data)
       db.collection('questions').document(key).update({"answers":answer_array})
+      
+def get_specific_question(question):
+      qdata=db.collection('questions').where("question", "==", question).get()
+      qdata=qdata[0].to_dict()
+      data={
+            'question': qdata['question'],
+            'views':qdata['views'],
+            'upvotes':qdata['upvotes'],
+            'author':qdata['author'],
+            'answers':qdata['answers']
+      }
+      return data
+
+def get_trending_questions():
+    index=db.collection('index').document('index').get()
+    getindex=index.to_dict()
+    index=getindex['index']
+    returndata=[]
+    dic={}
+    for i in range(index):
+          question_no='question'+str(i+1)
+          data=db.collection('questions').document(question_no).get()
+          data=data.to_dict()
+          answerlen=len(data['answers'])
+          if(answerlen>0):
+                dic[(i+1)]=data['views']
+                
+    sorted_dict = {}
+    sorted_keys = sorted(dic, key=dic.get)
+    sorted_keys.reverse()
+
+    for w in sorted_keys:
+        sorted_dict[w] = dic[w]
+        returnmap={}
+        question_no='question'+str(w)
+        data=db.collection('questions').document(question_no).get()
+        data=data.to_dict()
+        returnmap['author']=data['author']
+        returnmap['no_of_answers']=answerlen
+        returnmap['views']=data['views']
+        returnmap['upvotes']=data['upvotes']
+        returnmap['question']=data['question']
+        returndata.append(returnmap)
+    return returndata

@@ -27,6 +27,12 @@ def view_all_questions(request):
 	data=get_all_questions()
 	return Response(data)
 
+@api_view(['POST'])
+def view_trending_questions(request):
+	
+	data=get_trending_questions()
+	return Response(data)
+
 
 @api_view(['POST'])
 def view_unanswered_questions(request):
@@ -90,3 +96,19 @@ def add_answer(request):
 			return Response("INVALID USER DATA")
 	else:
     		return Response("INVALID DATA", status=status.HTTP_400_BAD_REQUEST)
+
+  
+@api_view(['POST'])
+def view_specific_question(request):
+    """
+	{
+		"question":"How to start with competetive programming?"
+	}
+ 	"""
+    serializer = ViewSpecificQuestionSerializer(data=request.data)
+    if serializer.is_valid():
+        question=serializer.data['question']
+    data=get_specific_question(question)
+    return Response(data)
+  	
+	

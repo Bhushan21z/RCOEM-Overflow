@@ -23,7 +23,9 @@ urlpatterns = [
 	path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 	path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('view_all_questions',views.view_all_questions),
+    path('view_trending_questions',views.view_trending_questions),
     path('view_unanswered_questions',views.view_unanswered_questions),
 	path('add_question',views.add_question),
 	path('add_answer',views.add_answer),
+	path('view_specific_question',views.view_specific_question),
 ]
