@@ -7,6 +7,7 @@ cred = credentials.Certificate('credentials.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+###############################################################################
 
 def get_all_questions():
       index = db.collection('index').document('index').get()
@@ -30,6 +31,7 @@ def get_all_questions():
 
       return returndata
 
+###############################################################################
 
 def get_unanswered_questions():
       index = db.collection('index').document('index').get()
@@ -50,10 +52,12 @@ def get_unanswered_questions():
 
       return returndata
 
+###############################################################################
 
 def checkUser(author, password, email):
       return True
 
+###############################################################################
 
 def add_question_db(question, author):
       data = {
@@ -70,6 +74,7 @@ def add_question_db(question, author):
       question_no = 'question'+str(index)
       db.collection('questions').document(question_no).set(data)
 
+###############################################################################
 
 def add_answer_db(question, author, answer):
       qdata = db.collection('questions').where("question", "==", question).get()
@@ -88,6 +93,7 @@ def add_answer_db(question, author, answer):
       answer_array.append(data)
       db.collection('questions').document(key).update({"answers": answer_array})
 
+###############################################################################
 
 def get_specific_question(question):
       qdata = db.collection('questions').where("question", "==", question).get()
@@ -101,6 +107,7 @@ def get_specific_question(question):
       }
       return data
 
+###############################################################################
 
 def get_trending_questions():
       index = db.collection('index').document('index').get()
@@ -133,3 +140,88 @@ def get_trending_questions():
             returnmap['question'] = data['question']
             returndata.append(returnmap)
       return returndata
+
+###############################################################################
+
+def check_email_exist(email):
+	try:
+		user = db.collection("users").where('email', '==', email).get()
+		if(len(user)>0):
+			return 1
+		else:
+			return 0
+	except:
+		print("ERROR IN CHECK_ID_EXIST")
+		return -1
+
+###############################################################################
+
+def check_username_exist(user_name):
+	try:
+		user = db.collection("users").where('user_name', '==', user_name).get()
+		if(len(user)>0):
+			return 1
+		else:
+			return 0
+	except:
+		print("ERROR IN CHECK_USERNAME_EXIST")
+		return -1
+
+###############################################################################
+
+def create_user(data):
+	try:
+		db.collection('users').add(data)
+		return 1
+	except:
+		print("ERROR IN CREATE_USER")
+		return -1
+
+###############################################################################
+
+def get_user_data(email):
+      try:
+            users = db.collection("users").where('email', '==', email).get()
+
+            if len(users) > 0:
+                  userdata = users[0].to_dict()
+                  return userdata
+            else:
+                  userdata = {}
+                  return userdata
+      except:
+            print("ERROR IN GET_USER_DATA")
+            return -1
+
+###############################################################################
+
+def verify_login_by_username(user_name,password):
+      try:
+            user = db.collection("users").where('user_name', u'==', user_name).get()
+            userdata=user[0].to_dict()
+            
+            if(password==userdata['password']):
+                  return 1
+            else:
+                  return 0;
+      except:
+            print("ERROR IN VERIFY_LOGIN_BY_USERNAME")
+            return -1
+
+###############################################################################
+
+def verify_login_by_email(email,password):
+      try:
+            user = db.collection("users").where('email', '==', email).get()
+            userdata=user[0].to_dict()
+            
+            if(password==userdata['password']):
+                  return 1
+            else:
+                  return 0;
+      except:
+            print("ERROR IN VERIFY_LOGIN_BY_EMAIL")
+            return -1
+      
+###############################################################################
+###############################################################################
