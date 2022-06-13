@@ -203,7 +203,7 @@ def verify_login_by_username(user_name,password):
             if(password==userdata['password']):
                   return 1
             else:
-                  return 0;
+                  return 0
       except:
             print("ERROR IN VERIFY_LOGIN_BY_USERNAME")
             return -1
@@ -218,10 +218,40 @@ def verify_login_by_email(email,password):
             if(password==userdata['password']):
                   return 1
             else:
-                  return 0;
+                  return 0
       except:
             print("ERROR IN VERIFY_LOGIN_BY_EMAIL")
             return -1
       
+###############################################################################
+
+def add_authentication_user_data(email,user_data):
+      try:
+            user_reference = db.collection("users").where('email', '==', email).get()
+            user=user_reference[0]
+            user_id=user.id
+            # print(user_id)
+            db.collection('users').document(user_id).update(user_data)
+            return 1
+      except:
+            return 0
+###############################################################################
+
+def covert_string_to_skills_list(skills_str):
+      
+      skills=[]
+      var=""
+      
+      for c in skills_str:
+            if(c==','):
+                  skills.append(var)
+                  var=""
+            else:
+                  var+=c                  
+      skills.append(var)
+      
+      print(skills)
+      return skills
+
 ###############################################################################
 ###############################################################################

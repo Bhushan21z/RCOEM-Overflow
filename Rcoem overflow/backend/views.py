@@ -131,9 +131,58 @@ def login(request):
 
 @api_view(['POST'])
 def authentication(request):
-    
-    
+    """
+    {
+        "email": "demouser1@gmail.com",
+        "college": "RCOEM",
+        "year": 2,
+        "branch" : "CSE",
+        "profile_url" : "https://www.google.com",
+        "points": 0,
+        "skills": "C++,C,JAVA,DJANGO"
+    }
+    """
+    serializer = AuthenticateSerializer(data=request.data)
 
+    if serializer.is_valid():
+        data = serializer.data
+        
+        email=data['email']
+        college=data['college']
+        year=data['year']
+        branch=data['branch']
+        profile_url=data['profile_url']
+        skills_str=data['skills']
+        points=0
+        skills=covert_string_to_skills_list(skills_str)       
+        
+        user_data = {
+            'college': college,
+            'year': year,
+            'branch': branch,
+            'profile_url': profile_url,
+            'skills': skills,
+            'points': points            
+        }
+        
+        if (check_email_exist(email) == 0):
+            print("NO USER FOUND")
+            return Response("NO USER FOUND", status=status.HTTP_404_NOT_FOUND)
+        
+        elif (check_email_exist(email) == -1):
+            print("ERROR")
+            return Response("PLEASE TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
+        
+        elif (check_email_exist(email) == 1):
+            
+            print("USER FOUND")
+            
+            if(add_authentication_user_data(email,user_data)==1):
+                return Response("PROFILE UPDATED", status=status.HTTP_200_OK) 
+            else:
+                print("ERROR IN UPDATING DATA")
+                return Response("PLEASE TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
+            
     return Response("INVALID DATA", status=status.HTTP_400_BAD_REQUEST)
 
 ###############################################################################
@@ -240,3 +289,4 @@ def view_specific_question(request):
 
 
 ###############################################################################
+
