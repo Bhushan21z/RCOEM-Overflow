@@ -37,17 +37,14 @@ def register(request):
             'password': data['password']
         }
 
-        # user_id = data["email"].split("@")[0]
         email=data['email']
-        
-        
 
         if (check_email_exist(email) != 0):
             print("EMAIL ALREADY EXIST")
             return Response("EMAIL ALREADY EXIST", status=status.HTTP_400_BAD_REQUEST)
         else:
             print("NEW USER FOUND")
-            create_user(user_data)
+            create_user(email,user_data)
             return Response("REGISTERED SUCCESSFULLY", status=status.HTTP_201_CREATED)
 
     else:
@@ -130,7 +127,7 @@ def login(request):
 
 
 @api_view(['POST'])
-def authentication(request):
+def register_contributor(request):
     """
     {
         "email": "demouser1@gmail.com",

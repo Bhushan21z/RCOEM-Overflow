@@ -144,16 +144,19 @@ def get_trending_questions():
 ###############################################################################
 
 def check_email_exist(email):
-	try:
-		user = db.collection("users").where('email', '==', email).get()
-		if(len(user)>0):
-			return 1
-		else:
-			return 0
-	except:
-		print("ERROR IN CHECK_ID_EXIST")
-		return -1
-
+      
+      try:
+            user_id = email.split("@")[0]
+            user = db.collection('users').document(user_id).get()
+            if(user.exists):
+                  return 1
+            else:
+                  return 0
+            
+      except:
+            print("ERROR IN CHECK_EMAIL_EXIST")
+            return -1
+      
 ###############################################################################
 
 def check_username_exist(user_name):
@@ -169,13 +172,15 @@ def check_username_exist(user_name):
 
 ###############################################################################
 
-def create_user(data):
-	try:
-		db.collection('users').add(data)
-		return 1
-	except:
-		print("ERROR IN CREATE_USER")
-		return -1
+def create_user(email,data):
+      
+      try:
+            user_id = email.split("@")[0]
+            db.collection('users').document(user_id).set(data)
+            return 1
+      except:
+            print("ERROR IN CREATE_USER")
+            return -1
 
 ###############################################################################
 
