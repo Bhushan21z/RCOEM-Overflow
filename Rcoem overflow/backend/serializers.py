@@ -18,9 +18,18 @@ class RegisterSerializer(serializers.Serializer):
 ###############################################################################
 
 class LoginSerializer(serializers.Serializer):
-    user_name = serializers.CharField(max_length = 100, allow_blank=True)
-    email = serializers.EmailField(max_length = 100, allow_blank=True)
+    email = serializers.EmailField(max_length = 100)
     password = serializers.CharField(max_length=100)
+
+###############################################################################
+
+class AuthenticateSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length = 100, allow_blank=True)
+    college = serializers.CharField(max_length=100)
+    year = serializers.CharField(max_length=100)
+    branch = serializers.CharField(max_length=100)
+    profile_url = serializers.URLField(max_length=100)
+    skills = serializers.CharField(max_length=5000)
 
 ###############################################################################
 
