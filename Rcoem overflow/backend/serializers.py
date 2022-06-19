@@ -18,8 +18,7 @@ class RegisterSerializer(serializers.Serializer):
 ###############################################################################
 
 class LoginSerializer(serializers.Serializer):
-    user_name = serializers.CharField(max_length = 100, allow_blank=True)
-    email = serializers.EmailField(max_length = 100, allow_blank=True)
+    email = serializers.EmailField(max_length = 100)
     password = serializers.CharField(max_length=100)
 
 ###############################################################################

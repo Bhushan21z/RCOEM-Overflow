@@ -11,7 +11,7 @@ from django.contrib.auth import views as auth_views
 
 schema_view = get_schema_view(
 	openapi.Info(
-		title="Apti APIs",
+		title="RCOEM OVERFLOW",
 		default_version='v1',
 		description="Welcome to the world of coding",
 	),

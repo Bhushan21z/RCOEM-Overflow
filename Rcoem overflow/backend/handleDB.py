@@ -217,10 +217,14 @@ def verify_login_by_username(user_name,password):
 
 def verify_login_by_email(email,password):
       try:
-            user = db.collection("users").where('email', '==', email).get()
-            userdata=user[0].to_dict()
+            user_id = email.split("@")[0]
+            # print("1")
+            user = db.collection('users').document(user_id).get()
+            userdata=user.to_dict()   
+            # print("2")
+            print(userdata)         
             
-            if(password==userdata['password']):
+            if(password == userdata['password']):
                   return 1
             else:
                   return 0
@@ -232,10 +236,7 @@ def verify_login_by_email(email,password):
 
 def add_authentication_user_data(email,user_data):
       try:
-            user_reference = db.collection("users").where('email', '==', email).get()
-            user=user_reference[0]
-            user_id=user.id
-            # print(user_id)
+            user_id = email.split("@")[0]
             db.collection('users').document(user_id).update(user_data)
             return 1
       except:
