@@ -272,8 +272,22 @@ def view_specific_question(request):
 ###############################################################################
 
 @api_view(['GET'])
+def all_tags(request):
+    data=get_all_tags()
+    return Response(data, status=status.HTTP_200_OK)   
+
+###############################################################################
+
+@api_view(['GET'])
 def all_contributors(request):
     data=get_all_contributors()
+    return Response(data, status=status.HTTP_200_OK)   
+
+###############################################################################
+
+@api_view(['GET'])
+def all_users(request):
+    data=get_all_users()
     return Response(data, status=status.HTTP_200_OK)   
 
 ###############################################################################
@@ -288,6 +302,21 @@ def top5_contributors(request):
 @api_view(['GET'])
 def total_users_count(request):
     count=get_total_users_count()
+    return Response(count, status=status.HTTP_200_OK)
+
+###############################################################################
+
+@api_view(['GET'])
+def total_questions_count(request):
+    count=get_total_questions_count()
+    return Response(count, status=status.HTTP_200_OK)
+
+###############################################################################
+
+@api_view(['GET'])
+def total_views_count(request):
+    increase_views()
+    count=get_total_views_count()
     return Response(count, status=status.HTTP_200_OK)
 
 ###############################################################################
