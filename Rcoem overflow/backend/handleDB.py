@@ -177,6 +177,10 @@ def create_user(email,data):
       try:
             user_id = email.split("@")[0]
             db.collection('users').document(user_id).set(data)
+            
+            index=db.collection('index').document('index')
+            index.update({"total_users": firestore.Increment(1)})
+            
             return 1
       except:
             print("ERROR IN CREATE_USER")
@@ -259,5 +263,61 @@ def covert_string_to_skills_list(skills_str):
       print(skills)
       return skills
 
+###############################################################################
+
+def get_all_contributors():
+      
+      my_list=[]
+      users = db.collection("users").where('contributor', u'==', 1).get()
+
+      for user in users:
+            user_data=user.to_dict()
+            dict={
+                  'name':user_data['name'],
+                  'user_name':user_data['user_name'],
+                  'email':user_data['email'],
+                  'mobile':user_data['mobile'],
+                  'college':user_data['college'],
+                  'year':user_data['year'],
+                  'branch':user_data['branch'],
+                  'points':user_data['points'],
+                  'skills':user_data['skills'],
+                  'profile_url':user_data['profile_url']
+            }
+            my_list.append(dict)    
+      
+      my_list = sorted(my_list, key=lambda k: k['points'], reverse=True)
+
+      return my_list
+
+###############################################################################
+
+def get_top_5_contributors():
+      my_list=[]
+      
+      users = db.collection("users").where('contributor', u'==', 1).get()
+
+      for user in users:
+            user_data=user.to_dict()
+
+            dict={
+                  'name':user_data['name'],
+                  'points':user_data['points']
+            }
+            my_list.append(dict)   
+      
+      my_list = sorted(my_list, key=lambda k: k['points'], reverse=True)
+      
+      return my_list
+
+###############################################################################
+
+def get_total_users_count():
+      data = db.collection("index").document('index').get()
+      data=data.to_dict()
+      count=data['total_users']
+      return count
+      
+###############################################################################
 ###############################################################################
 ###############################################################################

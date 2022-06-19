@@ -28,6 +28,9 @@ urlpatterns = [
 	path('login',views.login),
 	path('register_contributor',views.register_contributor),
 
+	path('all_contributors',views.all_contributors),
+	path('top5_contributors',views.top5_contributors),
+	path('total_users_count',views.total_users_count),
 
     path('view_all_questions',views.view_all_questions),
     path('view_trending_questions',views.view_trending_questions),

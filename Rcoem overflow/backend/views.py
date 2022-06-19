@@ -116,7 +116,6 @@ def register_contributor(request):
         "year": 2,
         "branch" : "CSE",
         "profile_url" : "https://www.demouser1.com",
-        "points": 0,
         "skills": "C++,C,JAVA,demouser1"
     }
     """
@@ -272,5 +271,24 @@ def view_specific_question(request):
 
 ###############################################################################
 
+@api_view(['GET'])
+def all_contributors(request):
+    data=get_all_contributors()
+    return Response(data, status=status.HTTP_200_OK)   
 
+###############################################################################
+
+@api_view(['GET'])
+def top5_contributors(request):
+    data=get_top_5_contributors()
+    return Response(data, status=status.HTTP_200_OK)     
+
+###############################################################################
+
+@api_view(['GET'])
+def total_users_count(request):
+    count=get_total_users_count()
+    return Response(count, status=status.HTTP_200_OK)
+
+###############################################################################
 ###############################################################################
