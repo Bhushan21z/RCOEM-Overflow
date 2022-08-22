@@ -11,9 +11,9 @@ from django.contrib.auth import views as auth_views
 
 schema_view = get_schema_view(
 	openapi.Info(
-		title="RCOEM OVERFLOW",
+		title="SIH 22 BOTS WITH BRAINS",
 		default_version='v1',
-		description="Welcome to the world of coding",
+		description="SMART INDIA HACKATHON 2022 PROJECT BACKEND",
 	),
 	public=True,
 	permission_classes=(permissions.AllowAny,),
@@ -26,24 +26,7 @@ urlpatterns = [
 
 	path('register',views.register),
 	path('login',views.login),
-	path('register_contributor',views.register_contributor),
-
-	path('all_contributors',views.all_contributors),
-	path('all_users',views.all_users),
-	path('all_tags',views.all_tags),
-
-	path('top5_contributors',views.top5_contributors),
-	path('total_users_count',views.total_users_count),
-	path('total_questions_count',views.total_questions_count),
-	path('total_views_count',views.total_views_count),
-
-    path('view_all_questions',views.view_all_questions),
-    path('view_trending_questions',views.view_trending_questions),
-    path('view_unanswered_questions',views.view_unanswered_questions),
-	path('view_specific_question',views.view_specific_question),
-
-    
-	path('add_question',views.add_question),
-	path('add_answer',views.add_answer),
+    path('city_api',views.city_api),
+    path('city_increment',views.city_increment),
 
 ]

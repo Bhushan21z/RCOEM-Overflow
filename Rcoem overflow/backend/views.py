@@ -1,13 +1,13 @@
-from os import stat
-from django.http import HttpResponse, JsonResponse
-
+from django.shortcuts import render
+import json
+from re import sub
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-import requests
 
 from .handleDB import *
 from .serializers import *
+
 
 ###############################################################################
 
@@ -17,10 +17,8 @@ def register(request):
     """
     {
         "name": "Demo User 1",
-        "user_name": "demouser1",
         "email": "demouser1@gmail.com",
-        "mobile": 1111111111,
-                "password": "pswd_1"
+        "password": "pswd_1"
     }
     """
     serializer = RegisterSerializer(data=request.data)
@@ -31,28 +29,22 @@ def register(request):
 
         user_data = {
             'name': data['name'],
-            'user_name': data['user_name'],
             'email': data['email'],
-            'mobile': data['mobile'],
             'password': data['password'],
-            'contributor': 0
+            'curr_city': 0,
+            'india_game_status': [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         }
 
         email = data['email']
-        user_name = data['user_name']
 
-        if (check_email_exist(email) != 0):
+        if (check_email_exist(email) == 1):
             print("EMAIL ALREADY EXIST")
             return Response("EMAIL ALREADY EXIST", status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        elif(check_username_exist(user_name) != 0):
-            print("EMAIL USER NAME EXIST")
-            return Response("USER NAME ALREADY EXIST", status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        elif((check_email_exist(email) == 0) and (check_username_exist(user_name) == 0)):
-            print("NEW USER FOUND")
+        
+        elif((check_email_exist(email) == 0)):
             create_user(email, user_data)
             return Response("REGISTERED SUCCESSFULLY", status=status.HTTP_201_CREATED)
+        
         else:
             print("ERROR IN REGISTERING, TRY AGAIN")
             return Response("ERROR IN REGISTERING, TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
@@ -80,244 +72,61 @@ def login(request):
         email = data['email']
         password = data['password']
 
-        print(email)
-        print(password)
-
-        if(check_email_exist(email) == 1):
-
-            if(verify_login_by_email(email, password) == 1):
-                print("LOGGED IN SUCCESFULLY")
-                return Response("LOGGED IN SUCCESSFULLY", status=status.HTTP_200_OK)
-            else:
-                print("INVALID PASSWORD")
-                return Response("Invalid Password !! \nPlease Try Again", status=status.HTTP_401_UNAUTHORIZED)
-
-        elif(check_email_exist(email) == -1):
-            print("Cant verify email (-1)")
-            return Response("PLEASE TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
-
-        else:
+        # print(email)
+        # print(password)
+        
+        if (check_email_exist(email) == 0):
             print("EMAIL DOES NOT EXIST")
-            return Response("EMAIL DOES NOT EXIST", status=status.HTTP_404_NOT_FOUND)
-
+            return Response("EMAIL DOES NOT EXIST", status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+        if (check_email_exist(email) != 1):
+            print("ERROR IN REGISTERING, TRY AGAIN")
+            return Response("ERROR IN REGISTERING, TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
+        
+        if(login_by_email(email, password) == 1):
+                return Response("VALID USER", status=status.HTTP_200_OK)
+            
+        elif(login_by_email(email, password) == 0):
+            return Response("Invalid Password !! \nPlease Try Again", status=status.HTTP_401_UNAUTHORIZED)
+        
+        else:
+            return Response("PLEASE TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
+        
     else:
         return Response("INVALID SERIALIZED DATA", status=status.HTTP_400_BAD_REQUEST)
 
 
 ###############################################################################
 
-
 @api_view(['POST'])
-def register_contributor(request):
+def city_api(request):
     """
     {
-        "email": "demouser1@gmail.com",
-        "college": "RCOEM",
-        "year": 2,
-        "branch" : "CSE",
-        "profile_url" : "https://www.demouser1.com",
-        "skills": "C++,C,JAVA,demouser1"
+        "email": "demouser1@gmail.com"
     }
     """
-    serializer = AuthenticateSerializer(data=request.data)
-
+    serializer = CityCountSerializer(data=request.data)
     if serializer.is_valid():
         data = serializer.data
-
-        email = data['email']
-        college = data['college']
-        year = data['year']
-        branch = data['branch']
-        profile_url = data['profile_url']
-        skills_str = data['skills']
-
-        points = 0
-        skills = covert_string_to_skills_list(skills_str)
-
-        user_data = {
-            'college': college,
-            'year': year,
-            'branch': branch,
-            'profile_url': profile_url,
-            'skills': skills,
-            'points': points,
-            'contributor': 1
-        }
-
-        if (check_email_exist(email) == 0):
-            print("NO USER FOUND")
-            return Response("NO USER FOUND", status=status.HTTP_404_NOT_FOUND)
-
-        elif (check_email_exist(email) == -1):
-            print("ERROR")
-            return Response("PLEASE TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
-
-        elif (check_email_exist(email) == 1):
-
-            print("USER FOUND")
-
-            if(add_authentication_user_data(email, user_data) == 1):
-                return Response("PROFILE UPDATED", status=status.HTTP_200_OK)
-            else:
-                print("ERROR IN UPDATING DATA")
-                return Response("PLEASE TRY AGAIN", status=status.HTTP_403_FORBIDDEN)
-
-    return Response("INVALID DATA", status=status.HTTP_400_BAD_REQUEST)
-
-###############################################################################
-
-
-@api_view(['POST'])
-def view_all_questions(request):
-
-    data = get_all_questions()
-    return Response(data)
-
-###############################################################################
-
-
-@api_view(['POST'])
-def view_trending_questions(request):
-
-    data = get_trending_questions()
-    return Response(data)
-
-###############################################################################
-
-
-@api_view(['POST'])
-def view_unanswered_questions(request):
-
-    data = get_unanswered_questions()
-    return Response(data)
-
-###############################################################################
-
-
-@api_view(['POST'])
-def add_question(request):
-    """
-    {
-            "author": "demouser4",
-            "email": "demouser4@gmail.com",
-            "password":"password",
-            "question":"How to be a full stack developer?"
-    }
-    """
-    serializer = AddQuestionSerializer(data=request.data)
-
-    if serializer.is_valid():
-        data = serializer.data
-        question = data['question']
-        author = data['author']
-        password = data['password']
-        email = data['email']
-        check = checkUser(author, password, email)
-        if(check == True):
-            add_question_db(question, author)
-            return Response("Question added successfully")
-        else:
-            return Response("INVALID USER DATA")
+        email=data['email']
+        count=city_count(email)
+        data_return={"city":count}
+        return Response(data_return)
     else:
-        return Response("INVALID DATA", status=status.HTTP_400_BAD_REQUEST)
-
-###############################################################################
-
-
+        return Response("INVALID SERIALIZED DATA", status=status.HTTP_400_BAD_REQUEST)
+    
 @api_view(['POST'])
-def add_answer(request):
+def city_increment(request):
     """
     {
-            "author": "demouser4",
-            "email": "demouser10@gmail.com",
-            "password":"password",
-            "question":"How to be a full stack developer?",
-            "answer":"Follow angela yu web development course on udemy."
+        "email": "demouser1@gmail.com"
     }
     """
-    serializer = AddAnswerSerializer(data=request.data)
-
+    serializer = CityIncrSerializer(data=request.data)
     if serializer.is_valid():
         data = serializer.data
-        question = data['question']
-        author = data['author']
-        password = data['password']
-        email = data['email']
-        answer = data['answer']
-        check = checkUser(author, password, email)
-        if(check == True):
-            add_answer_db(question, author, answer)
-            return Response("Answer added successfully")
-        else:
-            return Response("INVALID USER DATA")
+        email=data['email']
+        city_incre(email)
+        return Response("City Incremented")
     else:
-        return Response("INVALID DATA", status=status.HTTP_400_BAD_REQUEST)
-
-###############################################################################
-
-
-@api_view(['POST'])
-def view_specific_question(request):
-    """
-        {
-                "question":"How to start with competetive programming?"
-        }
-        """
-    serializer = ViewSpecificQuestionSerializer(data=request.data)
-    if serializer.is_valid():
-        question = serializer.data['question']
-    data = get_specific_question(question)
-    return Response(data)
-
-###############################################################################
-
-@api_view(['GET'])
-def all_tags(request):
-    data=get_all_tags()
-    return Response(data, status=status.HTTP_200_OK)   
-
-###############################################################################
-
-@api_view(['GET'])
-def all_contributors(request):
-    data=get_all_contributors()
-    return Response(data, status=status.HTTP_200_OK)   
-
-###############################################################################
-
-@api_view(['GET'])
-def all_users(request):
-    data=get_all_users()
-    return Response(data, status=status.HTTP_200_OK)   
-
-###############################################################################
-
-@api_view(['GET'])
-def top5_contributors(request):
-    data=get_top_5_contributors()
-    return Response(data, status=status.HTTP_200_OK)     
-
-###############################################################################
-
-@api_view(['GET'])
-def total_users_count(request):
-    count=get_total_users_count()
-    return Response(count, status=status.HTTP_200_OK)
-
-###############################################################################
-
-@api_view(['GET'])
-def total_questions_count(request):
-    count=get_total_questions_count()
-    return Response(count, status=status.HTTP_200_OK)
-
-###############################################################################
-
-@api_view(['GET'])
-def total_views_count(request):
-    increase_views()
-    count=get_total_views_count()
-    return Response(count, status=status.HTTP_200_OK)
-
-###############################################################################
-###############################################################################
+        return Response("INVALID SERIALIZED DATA", status=status.HTTP_400_BAD_REQUEST)
