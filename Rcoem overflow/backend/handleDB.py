@@ -6,7 +6,13 @@ cred = credentials.Certificate('credentials.json')
 
 firebase_admin.initialize_app(cred)
 db = firestore.client()
+    
+# cred2 = credentials.Certificate('credentialss.json')
 
+# firebase_admin.initialize_app('rcoem2',cred2)
+# dbs = firestore.client()
+
+# db = firestore.client()
 ###############################################################################
 
 def get_all_questions():
